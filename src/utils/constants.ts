@@ -1,1 +1,2 @@
-export const API_URL = "http://192.168.178.47:3000";
+export const API_URL = "http://api.notes.dazl.gg";
+export const SOCKET_URL = "ws://api.notes.dazl.gg/socket";
