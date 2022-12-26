@@ -1,4 +1,4 @@
-<script lang ts>
+<script lang="ts">
   export let title;
   export let description = "";
   export let scale = 1;
