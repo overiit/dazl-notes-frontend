@@ -6,9 +6,13 @@
   import Tabs from "./Tabs.svelte";
   import TaskBar from "./TaskBar.svelte";
 
+  const ITEMS_PER_PAGE = 5;
+
+
   export let project: Project;
   export let task: Task;
   export let children: Task[] = [];
+  let childrenPage = 0;
 
   enum TaskViewTabs {
     DETAILS = "Details",
@@ -136,12 +140,24 @@
       {#if !creatingSubTask && !editingSubTask}
         {#if children.length > 0}
           <div>
-            {#each children as child}
+            {#each children.slice(childrenPage * ITEMS_PER_PAGE, (childrenPage * ITEMS_PER_PAGE) + ITEMS_PER_PAGE) as child}
               <TaskBar task={child} editTask={task => {
                 taskToEdit = task;
                 editingSubTask = true;
               }} />
             {/each}
+            {#if children.length > 5}
+              <Tabs
+              tabs={
+                Array.from({ length: Math.ceil(children.length / ITEMS_PER_PAGE) }, (_, i) => `${i + 1}`)
+              }
+              active={(childrenPage + 1).toString()}
+              onTabClick={(tab, index) => {
+                childrenPage = parseInt(tab) - 1;
+              }}
+              />
+              <br />
+            {/if}
           </div>
         {:else}
           <p>Nothing found...</p>

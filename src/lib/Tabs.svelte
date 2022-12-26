@@ -4,6 +4,7 @@
   export let tabs: string[];
   export let active: string=undefined;
   export let onTabClick: (tab: string, index: number) => void;
+  export let primary: boolean = false;
 
 
   onMount(() => {
@@ -54,14 +55,14 @@
 <div class="tabs" bind:this={tabsContainer}>
   {#if currentIndex > -1}
     <div
-      class="tab-chip"
+      class="tab-chip {primary ? 'primary' : ''}"
       style="left: calc({positionX}% + 3px); top: calc({positionY}% + 3px); width: calc({100 /
         columnCount}% - 6px); height: calc({100 / rowCount}% - 6px);"
     />
   {/if}
   {#each tabs as tab, index}
     <div
-      class="tab {tab === currentTab ? 'active' : ''}"
+      class="tab {primary ? 'primary' : ''} {tab === currentTab ? 'active' : ''}"
       on:click={() => {
         active = tab;
         onTabClick(tab, index);
@@ -99,6 +100,10 @@
       box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
       transition: left 0.2s, top 0.2s;
       height: 25px;
+      &.primary {
+        background: linear-gradient(90deg, #41DA9A 0%, #3af0a4 100%);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
     }
     .tab {
       font-size: 0.85rem;
@@ -122,6 +127,9 @@
       &:hover,&.active {
         // darker color
         color: #5e5e5e;
+        &.primary:not(:hover) {
+          color: #fff;
+        }
       }
     }
   }
