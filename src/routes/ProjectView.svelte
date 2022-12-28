@@ -25,14 +25,13 @@
     error = "";
   let newTitle = "";
 
-  let hasTaskView = false,
-    taskViewId = "";
+  let hasTaskView = false;
 
   let viewingCompleted = false;
 
-
   $: username = $params.username.substr(1);
   $: project_id = $params.project_id;
+  $: task_id = $params.task_id;
 
   $: loadProject(username, project_id);
 
@@ -77,11 +76,9 @@
   let editingTitle = false;
 
   $: tasks = viewingCompleted ? completed : active;
-  $: taskView = all.find((task) => task.task_id === taskViewId);
+  $: taskView = all.find((task) => task.task_id === task_id);
 
   $: isAuthor = $authorStore[project_id]?.find((a) => a.user_id === get(Auth.session)?.user_id);
-
-  $: listeners = $listenersStore[project_id];
 
   const createTask = async () => {
     error = "";
@@ -183,8 +180,7 @@
           <TaskCard
             {task}
             viewTask={(task) => {
-              taskViewId = task.task_id;
-              hasTaskView = true;
+              redirectTo(`/@${username}/${project_id}/${task.task_id}`);
             }}
           />
         {/each}
@@ -248,19 +244,18 @@
 {/if}
 
 {#if taskView}
-  <Overlay
-    onClick={() => {
+  <TaskView
+    {project}
+    onClose={() => {
       hasTaskView = false;
-      taskViewId = "";
+      redirectTo(`/@${username}/${project?.project_id ?? "404"}`)
     }}
-    centered="BOTH"
-  >
-      <TaskView
-        {project}
-        task={taskView}
-        children={all.filter((task) => task.parent_id === taskView.task_id)}
-      />
-  </Overlay>
+    viewTask={(task) => {
+      redirectTo(`/@${username}/${project_id}/${task.task_id}`);
+    }}
+    task={taskView}
+    children={all.filter((task) => task.parent_id === taskView.task_id)}
+  />
 {/if}
 
 {#if projectSettingsOpen}
@@ -305,6 +300,7 @@
     }
   }
   .tasks {
+    position: relative;
     // grid with max width of 300px
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

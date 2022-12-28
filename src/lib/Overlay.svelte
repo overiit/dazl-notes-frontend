@@ -12,7 +12,7 @@
     }
 </script>
 <div class="overlay" style="{centerStyle}">
-    <div class="background" on:click={onClick} on:keypress={onClick} name="close"></div>
+    <div class="background" on:click={onClick} on:keypress={onClick} id="close"></div>
     <div class="content" {style}>
         <slot></slot>
     </div>
@@ -41,8 +41,6 @@
         .content {
             position: relative;
             z-index: 4;
-            max-height: calc(100% - 50px);
-            max-width: calc(100% - 50px);
         }
     }
 </style>

@@ -1,17 +1,18 @@
 <script lang="ts">
   import { ErrorResponse, type Project, type Task } from "../utils/api";
   import API from "../utils/api";
-  import Box from "./Box.svelte";
   import ErrorMessage from "./ErrorMessage.svelte";
   import Tabs from "./Tabs.svelte";
   import TaskBar from "./TaskBar.svelte";
+  import SideBar from "./SideBar.svelte";
 
   const ITEMS_PER_PAGE = 5;
-
 
   export let project: Project;
   export let task: Task;
   export let children: Task[] = [];
+  export let onClose: () => void;
+  export let viewTask: (task: Task) => void;
   let childrenPage = 0;
 
   enum TaskViewTabs {
@@ -49,8 +50,11 @@
     description = "";
   }
 
-  async function deleteSubTask () {
-    const response = await API.deleteTask(project.project_id, taskToEdit.task_id);
+  async function deleteSubTask() {
+    const response = await API.deleteTask(
+      project.project_id,
+      taskToEdit.task_id
+    );
     if (response instanceof ErrorResponse) {
       error = response.message;
       return;
@@ -58,7 +62,7 @@
     editingSubTask = false;
   }
 
-  async function deleteTask () {
+  async function deleteTask() {
     const response = await API.deleteTask(project.project_id, task.task_id);
     if (response instanceof ErrorResponse) {
       error = response.message;
@@ -68,20 +72,17 @@
     confirmingDelete = false;
   }
 
-  async function updateSubTask () {
+  async function updateSubTask() {
     const { name, description } = taskToEdit;
     if (!name) {
       error = "Name is required";
       return;
     }
 
-    const response = await API.updateTask(
-      taskToEdit.task_id,
-      {
-        name,
-        description
-      }
-    );
+    const response = await API.updateTask(taskToEdit.task_id, {
+      name,
+      description,
+    });
     if (response instanceof ErrorResponse) {
       error = response.message;
       return;
@@ -89,20 +90,17 @@
     editingSubTask = false;
   }
 
-  async function updateTask () {
+  async function updateTask() {
     const { name, description } = taskToEdit;
     if (!name) {
       error = "Name is required";
       return;
     }
 
-    const response = await API.updateTask(
-      taskToEdit.task_id,
-      {
-        name,
-        description
-      }
-    );
+    const response = await API.updateTask(taskToEdit.task_id, {
+      name,
+      description,
+    });
     if (response instanceof ErrorResponse) {
       error = response.message;
       return;
@@ -113,17 +111,15 @@
   let active = "Details";
 </script>
 
-<Box title={task.name} scale={1.5}>
+<SideBar title={task.name} scale={1.5} {onClose}>
   <Tabs
-    tabs={[
-      ...Object.values(TaskViewTabs),
-    ]}
-    active={active}
+    tabs={[...Object.values(TaskViewTabs)]}
+    {active}
     onTabClick={(tab) => {
       active = tab;
       confirmingDelete = false;
       error = "";
-      
+
       if (active === TaskViewTabs.EDIT) {
         taskToEdit = task;
       }
@@ -134,39 +130,44 @@
     {#if active === TaskViewTabs.DETAILS}
       {#if task.description && !creatingSubTask && !editingSubTask}
         <b>Description: </b>
-        <pre>{ task.description }</pre>
+        <pre>{task.description}</pre>
         <br />
       {/if}
       {#if !creatingSubTask && !editingSubTask}
         {#if children.length > 0}
-          <div>
-            {#each children.slice(childrenPage * ITEMS_PER_PAGE, (childrenPage * ITEMS_PER_PAGE) + ITEMS_PER_PAGE) as child}
-              <TaskBar task={child} editTask={task => {
-                taskToEdit = task;
-                editingSubTask = true;
-              }} />
+          <div style="display: flex; flex-flow: column;height: 100%;overflow: none;overflow-y: auto; padding-right: 1rem;">
+            {#each children.slice(childrenPage * ITEMS_PER_PAGE, childrenPage * ITEMS_PER_PAGE + ITEMS_PER_PAGE) as child}
+              <TaskBar
+                task={child}
+                viewTask={viewTask}
+              />
             {/each}
-            {#if children.length > 5}
-              <Tabs
-              tabs={
-                Array.from({ length: Math.ceil(children.length / ITEMS_PER_PAGE) }, (_, i) => `${i + 1}`)
-              }
+          </div>
+          {#if children.length > 5}
+          <br>
+            <Tabs
+              style="margin-top: auto;"
+              tabs={Array.from(
+                { length: Math.ceil(children.length / ITEMS_PER_PAGE) },
+                (_, i) => `${i + 1}`
+              )}
               active={(childrenPage + 1).toString()}
-              onTabClick={(tab, index) => {
+              onTabClick={(tab) => {
                 childrenPage = parseInt(tab) - 1;
               }}
-              />
-              <br />
-            {/if}
-          </div>
+            />
+            <br />
+          {/if}
         {:else}
           <p>Nothing found...</p>
         {/if}
-        <button
-          class="btn primary no-3d flat"
-          style="margin-bottom: .5rem;margin-top: auto;"
-          on:click={() => (creatingSubTask = true)}>Create</button
-        >
+        {#if !task.parent_id}
+          <button
+            class="btn primary no-3d flat"
+            style="margin-bottom: .5rem;margin-top: auto;"
+            on:click={() => (creatingSubTask = true)}>Create</button
+          >
+        {/if}
       {:else if editingSubTask}
         <div style="display: flex;">
           <button
@@ -176,10 +177,14 @@
           >
             &larr; Go Back
           </button>
-          <button class="btn btn-blocked flat smol no-3d" style="margin-left: auto;width:
-          auto;" on:click={() => {
-            confirmingDelete = true;
-          }}>
+          <button
+            class="btn btn-blocked flat smol no-3d"
+            style="margin-left: auto;width:
+          auto;"
+            on:click={() => {
+              confirmingDelete = true;
+            }}
+          >
             DELETE
           </button>
         </div>
@@ -267,10 +272,14 @@
         >
           &larr; Go Back
         </button>
-        <button class="btn btn-blocked flat smol no-3d" style="margin-left: auto;width:
-        auto;" on:click={() => {
-          confirmingDelete = true;
-        }}>
+        <button
+          class="btn btn-blocked flat smol no-3d"
+          style="margin-left: auto;width:
+        auto;"
+          on:click={() => {
+            confirmingDelete = true;
+          }}
+        >
           DELETE
         </button>
       </div>
@@ -318,7 +327,7 @@
       {/if}
     {/if}
   </div>
-</Box>
+</SideBar>
 
 <style lang="scss">
   input,

@@ -3,6 +3,7 @@
   import ErrorMessage from "../lib/ErrorMessage.svelte";
   import PathBar from "../lib/PathBar.svelte";
   import ProjectBar from "../lib/ProjectBar.svelte";
+  import Tabs from "../lib/Tabs.svelte";
   import { params } from "../router/Routing";
   import Planner from "../storage/planner";
   import API from "../utils/api";
@@ -10,9 +11,13 @@
   
   const { projectStore, userStore } = Planner;
 
+  const PROJECTS_PER_PAGE = 2;
+
   $: username = $params.username.substr(1);
 
   $: loadProjects(username);
+
+  $: projects = Object.values($projectStore)?.filter(project => project.user_id === $userStore[username]?.user_id);
 
   let error = "";
 
@@ -21,7 +26,9 @@
     if (isLoading) {
       return;
     }
-    isLoading = true;
+    if (!projects || !projects.length) {
+      isLoading = true;
+    }
     error = "";
     try {
       await API.user(username);
@@ -33,7 +40,7 @@
     isLoading = false;
   }
 
-  $: projects = Object.values($projectStore)?.filter(project => project.user_id === $userStore[username]?.user_id);
+  let projectPage = 0;
 
 </script>
 
@@ -47,10 +54,17 @@
     {:else}
       {#if projects && projects.length > 0}
           <div class="projects">
-              {#each projects as project}
-                  <ProjectBar {project}/>
+              {#each projects.slice(projectPage * PROJECTS_PER_PAGE, (projectPage * PROJECTS_PER_PAGE) + PROJECTS_PER_PAGE) as project}
+                  <ProjectBar {project} />
               {/each}
           </div>
+          {#if projects.length > PROJECTS_PER_PAGE}
+            <Tabs
+              tabs={Array.from({ length: Math.ceil(projects.length / PROJECTS_PER_PAGE) }).map((_, i) => `${i + 1}`)}
+              active={(projectPage + 1).toString()}
+              onTabClick={i => projectPage = parseInt(i) - 1}
+            />
+        {/if}
       {:else}
           <div class="empty">No public projects yet</div>
       {/if}

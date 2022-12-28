@@ -47,7 +47,7 @@ export type Project = {
 
 export type Task = {
     task_id: string;
-    parent_id: string;
+    parent_id?: string;
     project_id: string;
     name: string;
     description: string;

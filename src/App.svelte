@@ -30,6 +30,7 @@
 {/if}
 <Route path="/:username" exact component={ProfileView} />
 <Route path="/:username/:project_id" exact component={ProjectView} />
+<Route path="/:username/:project_id/:task_id" exact component={ProjectView} />
 <Route path="/access" exact component={Login} />
 
 <style lang="scss">

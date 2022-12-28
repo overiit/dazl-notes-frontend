@@ -6,7 +6,7 @@
   import BarStatusSelector from "./BarStatusSelector.svelte";
 
   export let task: Task;
-  export let editTask: (task: Task) => void;
+  export let viewTask: (task: Task) => void;
 
   let selectStatus = false;
   async function onStatusChange(status: string) {
@@ -36,7 +36,7 @@
     <button
       class="btn no-3d gray flat"
       id="view"
-      on:click={() => editTask(task)}>EDIT</button
+      on:click={() => viewTask(task)}>VIEW</button
     >
   </div>
   {#if selectStatus}
@@ -60,7 +60,7 @@
       display: flex;
       flex-flow: column;
       .name {
-        font-size: 1.3rem;
+        font-size: 1rem;
         font-weight: 700;
         margin-top: .3rem;
       }

@@ -5,6 +5,7 @@
   export let active: string=undefined;
   export let onTabClick: (tab: string, index: number) => void;
   export let primary: boolean = false;
+  export let style = "";
 
 
   onMount(() => {
@@ -52,7 +53,7 @@
   $: positionX = ((currentIndex % columnCount) / columnCount) * 100;
   $: positionY = (Math.floor(currentIndex / columnCount) / rowCount) * 100;
 </script>
-<div class="tabs" bind:this={tabsContainer}>
+<div class="tabs" bind:this={tabsContainer} {style}>
   {#if currentIndex > -1}
     <div
       class="tab-chip {primary ? 'primary' : ''}"
@@ -89,15 +90,16 @@
 
     padding: 3px;
     border-radius: 5px;
-    background-color: #f7f7f7;
+    background-color: #d9d9d9;
 
     .tab-chip {
       position: absolute;
       z-index: 1;
       border-radius: 5px;
       width: 100%;
-      background-color: rgba(0, 0, 0, 0.1);
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+      // background-color: rgba(0, 0, 0, 0.1);
+      background-color: rgb(252, 252, 252);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       transition: left 0.2s, top 0.2s;
       height: 25px;
       &.primary {
