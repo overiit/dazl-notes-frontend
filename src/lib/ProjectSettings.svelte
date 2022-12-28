@@ -2,12 +2,13 @@
   import Planner from "../storage/planner";
   import { AuthorPermission, type Project } from "../utils/api";
   import API from "../utils/api";
-  import Box from "./Box.svelte";
   import ErrorMessage from "./ErrorMessage.svelte";
   import Tabs from "./Tabs.svelte";
   import Auth from "../storage/auth";
+  import SideBar from "./SideBar.svelte";
 
   export let project: Project;
+  export let onClose: () => void;
   let error;
 
   const { authorStore } = Planner;
@@ -60,7 +61,7 @@
 
 </script>
 
-<Box title="Project Settings">
+<SideBar {onClose} title="Project Settings">
   <Tabs
     tabs={Object.values(ProjectTabs)}
     onTabClick={(tab) => {
@@ -113,7 +114,7 @@
       <ErrorMessage {error} />
     </div>
   {/if}
-</Box>
+  </SideBar>
 
 <style lang="scss">
   .add-author {

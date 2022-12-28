@@ -259,13 +259,9 @@
 {/if}
 
 {#if projectSettingsOpen}
-  <Overlay
-    onClick={() => {
-      projectSettingsOpen = false;
-    }}
-  >
-    <ProjectSettings {project} />
-  </Overlay>
+  <ProjectSettings {project} onClose={() => {
+    projectSettingsOpen = false;
+  }} />
 {/if}
 
 <style lang="scss">

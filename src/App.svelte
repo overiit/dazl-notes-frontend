@@ -7,6 +7,7 @@
   import ProjectView from "./routes/ProjectView.svelte";
   import Route from "./router/Route.svelte";
   import ProfileView from "./routes/ProfileView.svelte";
+  import CreateProject from "./routes/CreateProject.svelte";
 
   onMount(() => {
     Auth.init();
@@ -25,10 +26,11 @@
 
 {#if $token && $session}
   <Route path="/" exact component={ProjectList} />
+  <Route path="/create" exact component={CreateProject} />
 {:else}
   <Route path="/" exact component={Login} />
 {/if}
-<Route path="/:username" exact component={ProfileView} />
+<Route path="/@:username" exact component={ProfileView} />
 <Route path="/:username/:project_id" exact component={ProjectView} />
 <Route path="/:username/:project_id/:task_id" exact component={ProjectView} />
 <Route path="/access" exact component={Login} />

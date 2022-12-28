@@ -116,11 +116,18 @@ export const isActiveRoute = (current_path: string, path: string, exact: boolean
   for (let i = 0; i < argCount; i++) {
     let current_arg = current_args[i];
     let path_arg = path_args[i];
-    let isVariable = path_arg.startsWith(":");
+    let isVariable = path_arg.includes(":");
+    let [prefix, paramKey, suffix] = path_arg.split(":");
+    prefix = prefix ?? "";
+    suffix = suffix ?? "";
     if (!isVariable) {
       if (current_arg != path_arg) return false;
     } else {
-      variableParams[path_arg.substr(1)] = current_arg;
+      if (current_arg.startsWith(prefix ?? "") && current_arg.endsWith(suffix ?? "")) {
+        variableParams[paramKey] = current_arg.slice(prefix.length, current_arg.length - suffix.length);
+      } else {
+        return false;
+      }
     }
   }
 
@@ -155,11 +162,18 @@ export const isActiveRouteUnmodified = (current_path: string, path: string, exac
   for (let i = 0; i < argCount; i++) {
     let current_arg = current_args[i];
     let path_arg = path_args[i];
-    let isVariable = path_arg.startsWith(":");
+    let isVariable = path_arg.includes(":");
+    let [prefix, paramKey, suffix] = path_arg.split(":");
+    prefix = prefix ?? "";
+    suffix = suffix ?? "";
     if (!isVariable) {
       if (current_arg != path_arg) return false;
     } else {
-      variableParams[path_arg.substr(1)] = current_arg;
+      if (current_arg.startsWith(prefix ?? "") && current_arg.endsWith(suffix ?? "")) {
+        variableParams[paramKey] = current_arg.slice(prefix.length, current_arg.length - suffix.length);
+      } else {
+        return false;
+      }
     }
   }
   return true;

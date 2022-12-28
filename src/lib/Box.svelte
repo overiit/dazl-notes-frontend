@@ -27,7 +27,7 @@
     h2 {
       color: black;
       font-weight: 700;
-      font-size: 2rem;
+      font-size: 1.5rem;
     }
     p {
       font-size: 1rem;
@@ -37,8 +37,6 @@
     }
     .inner {
       height: calc(100% - 75px);
-      overflow: hidden;
-      overflow-y: auto;
       .content {
         display: flex;
         flex-flow: column;

@@ -11,9 +11,9 @@
   
   const { projectStore, userStore } = Planner;
 
-  const PROJECTS_PER_PAGE = 2;
+  const PROJECTS_PER_PAGE = 5;
 
-  $: username = $params.username.substr(1);
+  $: username = $params.username;
 
   $: loadProjects(username);
 
