@@ -64,7 +64,7 @@ import { fade } from 'svelte/transition';
       margin-bottom: 0.5rem;
     }
     .inner {
-      height: calc(100% - 75px);
+      height: calc(100% - 34px);
       overflow: hidden;
       overflow-y: auto;
       .content {

@@ -147,8 +147,7 @@
           <br>
             <Tabs
               style="margin-top: auto;"
-              tabs={Array.from(
-                { length: Math.ceil(children.length / ITEMS_PER_PAGE) },
+              tabs={Array.from({ length: Math.ceil(children.length / ITEMS_PER_PAGE) },
                 (_, i) => `${i + 1}`
               )}
               active={(childrenPage + 1).toString()}
@@ -158,8 +157,6 @@
             />
             <br />
           {/if}
-        {:else}
-          <p>Nothing found...</p>
         {/if}
         {#if !task.parent_id}
           <button
