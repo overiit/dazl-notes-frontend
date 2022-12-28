@@ -87,6 +87,10 @@
     label {
       font-weight: 400;
       color: #898989;
+      user-select: none;
+      -ms-user-select: none;
+      -moz-user-select: none;
+      -webkit-user-select: none;
     }
   }
 

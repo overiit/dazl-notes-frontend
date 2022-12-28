@@ -73,6 +73,9 @@ export const redirectTo = (href: string) => {
   if (href.endsWith("//")) {
     href = href.substr(0, href.length - 1);
   }
+  if (href.endsWith("/")) {
+    href = href.substr(0, href.length - 1);
+  }
   history.pushState(href, "", href);
 }
 
